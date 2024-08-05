@@ -3,12 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-"scripts": {
-  "start": "node index.js",
-  "babel-node": "babel-node --presets=@babel/preset-env",
-  "dev": "nodemon --exec npm run babel-node src/index.js",
-  "init-db": "node init-db.js"
-},
+  "scripts": {
+    "babel-node": "babel-node --presets=@babel/preset-env",
+    "dev": "nodemon --exec npm run babel-node src/index.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
