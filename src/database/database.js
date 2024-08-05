@@ -9,7 +9,7 @@ const pool = new Pool({
     password: config.password,
     port: config.port || 5432, // Default to 5432 if not provided
     ssl: {
-        rejectUnauthorized: false // Necesario si estás usando Azure con SSL
+        rejectUnauthorized: true // Necesario si estás usando Azure con SSL
     }
 });
 
