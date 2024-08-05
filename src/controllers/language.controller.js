@@ -1,11 +1,12 @@
 import { getConnection } from "./../database/database";
-import puppeteer from 'puppeteer';
+import puppeteer from "puppeteer";
 
 const getTarjetas = async (req, res) => {
     try {
-        const connection = await getConnection();
-        const result = await connection.query("SELECT identificador, numero_tarjeta, fecha, ccv, nombre_completo, correo FROM tarjeta");
-        res.json(result);
+        const client = await getConnection();
+        const result = await client.query("SELECT identificador, numero_tarjeta, fecha, ccv, nombre_completo, correo FROM tarjeta");
+        client.release(); // Asegúrate de liberar la conexión
+        res.json(result.rows);
     } catch (error) {
         res.status(500).send(error.message);
     }
@@ -14,9 +15,10 @@ const getTarjetas = async (req, res) => {
 const getTarjeta = async (req, res) => {
     try {
         const { id } = req.params;
-        const connection = await getConnection();
-        const result = await connection.query("SELECT identificador, numero_tarjeta, fecha, ccv, nombre_completo, correo FROM tarjeta WHERE identificador = ?", id);
-        res.json(result);
+        const client = await getConnection();
+        const result = await client.query("SELECT identificador, numero_tarjeta, fecha, ccv, nombre_completo, correo FROM tarjeta WHERE identificador = $1", [id]);
+        client.release();
+        res.json(result.rows[0]);
     } catch (error) {
         res.status(500).send(error.message);
     }
@@ -30,9 +32,12 @@ const addTarjeta = async (req, res) => {
             return res.status(400).json({ message: "error en ingresar la tarjeta" });
         }
 
-        const tarjeta = { numero_tarjeta, fecha, ccv, nombre_completo, correo };
-        const connection = await getConnection();
-        await connection.query("INSERT INTO tarjeta SET ?", tarjeta);
+        const client = await getConnection();
+        await client.query(
+            "INSERT INTO tarjeta (numero_tarjeta, fecha, ccv, nombre_completo, correo) VALUES ($1, $2, $3, $4, $5)",
+            [numero_tarjeta, fecha, ccv, nombre_completo, correo]
+        );
+        client.release();
         return res.json({ message: "Tarjeta añadida" });
     } catch (error) {
         if (!res.headersSent) {
